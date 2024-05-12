@@ -118,7 +118,7 @@ const getCurrentUserProfile = asyncHandler(async (req, res) => {
 });
 
 const updateCurrentUserProfile = asyncHandler(async (req, res) => {
-  const user =await User.findById(req.user._id);
+  const user = await User.findById(req.user._id);
   if (user) {
     user.username = req.body.username || user.username;
     user.email = req.body.email || user.email;
@@ -149,6 +149,66 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
+const deleteById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    if (user.isAdmin) {
+      res.json(new ApiResponse(400, "Cannot delete an admin"));
+    }
+    await user.deleteOne({ _id: user._id });
+    res.json(new ApiResponse(201, "User removed"));
+  } else {
+    res.status(404);
+    throw new ApiError(404, "User not found");
+  }
+});
+
+const getUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).select("-password");
+  if (user) {
+    res.json(
+      new ApiResponse(
+        201,
+        {
+          user,
+        },
+        "User from admin route"
+      )
+    );
+  } else {
+    res.status(401);
+    throw new ApiError(401, "User could not be retrieved");
+  }
+});
+
+const updateUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (user) {
+    user.username = req.body.username || user.username;
+    user.email = req.body.email || user.email;
+    user.isAdmin = Boolean(req.body.isAdmin)
+
+    const updatedUser = await user.save();
+
+    res.json(
+      new ApiResponse(
+        201,
+        {
+          _id: updatedUser._id,
+          username: updatedUser.username,
+          email: updatedUser.email,
+          isAdmin: updatedUser.isAdmin,
+        },
+        "User updated successfully by admin"
+      )
+    );
+  } else {
+    res.status(404);
+    throw new ApiError(404, "User not found");
+  }
+});
+
 export {
   createUser,
   loginUser,
@@ -156,4 +216,7 @@ export {
   getAllUsers,
   getCurrentUserProfile,
   updateCurrentUserProfile,
+  deleteById,
+  getUserById,
+  updateUserById
 };
