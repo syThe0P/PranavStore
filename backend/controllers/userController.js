@@ -1,7 +1,7 @@
 import User from "../models/UserModel.js";
-import asyncHandler from "../middlewares/asyncHandler.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/createToken.js";
+import asyncHandler from "../middlewares/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 

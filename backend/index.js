@@ -1,5 +1,3 @@
-//packages
-import path from 'path'
 import express from 'express'
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
@@ -8,6 +6,7 @@ import cookieParser from 'cookie-parser'
 //Utilities
 import connectDB from './config/db.js'
 import userRoutes from './routes/userRoutes.js'
+import productRoutes from './routes/productRoutes.js'
 
 dotenv.config()
 const port = process.env.PORT || 3000
@@ -23,5 +22,6 @@ app.use(cookieParser());
 
 //routes
 app.use('/api/users', userRoutes);
+app.use('/api/v1/',productRoutes);
 
 app.listen(port, ()=> console.log(`Server running on port ${port}`))
