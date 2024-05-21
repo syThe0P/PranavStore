@@ -4,28 +4,38 @@ import asyncHandler from "./asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 
 const authenticate = asyncHandler(async (req, res, next) => {
-  let token;
-  token = req.cookies.jwt;
-
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.userID).select("-password");
-      next();
-    } catch (error) {
-      res.status(401).json(new ApiError(401, "Not authorized, token failed"));
+  try {
+    const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
+    
+    // console.log(token);
+    if (!token) {
+        throw new ApiError(401, "Unauthorized request")
     }
-  } else {
-    res.status(401).json(new ApiError(401, "Token not found, Unauthorized!!!"));
-  }
-});
-//for admin
-const authorizeAdmin = (req, res, next) => {
-  if (req.user && req.user.isAdmin) {
-    next();
-  } else {
-    res.status(401).json(new ApiError(401, "Not authorized as an admin"));
-  }
-};
 
-export { authenticate, authorizeAdmin };
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+
+    const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
+
+    if (!user) {
+        
+        throw new ApiError(401, "Invalid Access Token")
+    }
+
+    req.user = user;
+    next()
+} catch (error) {
+    throw new ApiError(401, error?.message || "Invalid access token")
+}
+});
+
+const authorizeRoles = (...roles) => {
+    return(req, res, next) =>{
+        if(!roles.includes(req.user.role)){
+            throw new ApiError(401, "You are not allowed to access this resource")
+        }
+        next();
+    }
+}
+
+
+export { authenticate,authorizeRoles };

@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  createUser,
+  registerUser,
   loginUser,
   logoutUser,
   getAllUsers,
@@ -10,15 +10,15 @@ import {
   getUserById,
   updateUserById,
 } from "../controllers/userController.js";
-import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
+import { authenticate,authorizeRoles} from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 router
   .route("/")
-  .post(createUser)
-  .get(authenticate, authorizeAdmin, getAllUsers);
+  .post(registerUser)
+  .get(authenticate,authorizeRoles("admin"),  getAllUsers);
 router.route("/auth").post(loginUser);
-router.route("/logout").post(logoutUser);
+router.route("/logout").post(authenticate,logoutUser);
 
 router
   .route("/profile")
@@ -28,8 +28,8 @@ router
 //Admin routes
 router
   .route("/:id")
-  .delete(authenticate, authorizeAdmin, deleteById)
-  .get(authenticate, authorizeAdmin, getUserById)
-  .put(authenticate, authorizeAdmin, updateUserById); 
+  .delete(authenticate,authorizeRoles("admin"),  deleteById)
+  .get(authenticate,authorizeRoles("admin"),  getUserById)
+  .put(authenticate,authorizeRoles("admin"), updateUserById); 
 
 export default router;
