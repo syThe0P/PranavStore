@@ -1,12 +1,21 @@
-import jwt from "jsonwebtoken";
+//Creating token and saving in cookie
+import { ApiResponse } from "./ApiResponse"
 
-const generateToken = (userID) => {
-  const token = jwt.sign({ userID }, process.env.JWT_SECRET, {
-    expiresIn: "30d",
-  });
+const sendToken = (user, statuCode, res) =>{
+  const token = user.getJwtToken()
+  //options for cookes
 
-  // Return the token instead of setting cookies here
-  return token;
-};
+  const options = {
+    expires: new Date(
+      Date.now + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true
+  }
+  res.status(statuCode).cookie('token',token,options).json(new ApiResponse(
+    statuCode,
+    user,
+    token,
+  ))
+}
 
-export default generateToken;
+export default sendToken;

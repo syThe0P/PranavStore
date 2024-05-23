@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 
 //Utilities
 import connectDB from './config/db.js'
+//Routes
 import userRoutes from './routes/userRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 
@@ -21,7 +22,7 @@ app.use(cookieParser());
 
 
 //routes
-app.use('/api/users', userRoutes);
+app.use('/api/v1', userRoutes);
 app.use('/api/v1/',productRoutes);
 
 app.listen(port, ()=> console.log(`Server running on port ${port}`))

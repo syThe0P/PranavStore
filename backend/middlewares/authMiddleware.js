@@ -3,18 +3,20 @@ import User from "../models/UserModel.js";
 import asyncHandler from "./asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 
+
+//check user authenticated or not
 const authenticate = asyncHandler(async (req, res, next) => {
   try {
-    const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
+    const {token} = req.cookies || req.header("Authorization")?.replace("Bearer ", "")
     
     // console.log(token);
     if (!token) {
         throw new ApiError(401, "Unauthorized request")
     }
 
-    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+    const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET)
 
-    const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
+    const user = await User.findById(decodedToken?.id)
 
     if (!user) {
         
@@ -28,6 +30,8 @@ const authenticate = asyncHandler(async (req, res, next) => {
 }
 });
 
+
+//Check for admin
 const authorizeRoles = (...roles) => {
     return(req, res, next) =>{
         if(!roles.includes(req.user.role)){

@@ -1,24 +1,25 @@
 import mongoose from "mongoose";
 import validator from "validator";
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 // Define the user schema
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Please provide your name'],
+      required: [true, "Please provide your name"],
     },
     email: {
       type: String,
-      required: [true, 'Please provide your email'],
+      required: [true, "Please provide your email"],
       unique: true,
-      validate: [validator.isEmail, 'Please provide a valid email']
+      validate: [validator.isEmail, "Please provide a valid email"],
     },
     password: {
       type: String,
-      required: [true, 'Please provide a password'],
+      required: [true, "Please provide a password"],
       minlength: 8,
       select: false, // Ensure the password is not returned in any query by default
     },
@@ -36,9 +37,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
-    refreshToken: {
-      type: String,
-    },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
   },
   { timestamps: true }
 );
@@ -55,30 +55,31 @@ userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-// Instance method to generate access token
-userSchema.methods.generateAccessToken = function () {
-  return jwt.sign(
-    {
-      _id: this._id,
-      email: this.email,
-      name: this.name,
-    },
-    process.env.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-    }
-  );
+//Generating password reset token
+userSchema.methods.getResetPasswordToken = function () {
+  //generating token
+  const resetToken = crypto.randomBytes(20).toString("hex");
+
+  //hASHING AND DDING RESET PASSWORD TOKEN TO SHema
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+
+  return resetToken;
 };
 
-// Instance method to generate refresh token
-userSchema.methods.generateRefreshToken = function () {
+// Instance method to generate  token
+userSchema.methods.getJwtToken = function () {
   return jwt.sign(
     {
-      _id: this._id,
+      id: this._id,
     },
-    process.env.REFRESH_TOKEN_SECRET,
+    process.env.TOKEN_SECRET,
     {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+      expiresIn: process.env.TOKEN_EXPIRY,
     }
   );
 };
