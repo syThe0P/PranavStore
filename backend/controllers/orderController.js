@@ -85,8 +85,8 @@ const updateOrder = asyncHandler(async(req, res)=>{
         throw new ApiError(400, "You have already delivered this order")
     }
 
-    order.orderItems.forEach(async(order)=> {
-        await updateStock(order.Product, order.quantity);
+    order.orderItems.forEach(async(o)=> {
+        await updateStock(o.Product, o.quantity);
     })
 
     order.orderStatus === req.body.status;
@@ -107,7 +107,7 @@ const updateOrder = asyncHandler(async(req, res)=>{
 async function updateStock(id, quantity){
     const product = await Product.findById(id);
 
-    product.stock -= quantity;
+    product.Stock -= quantity;
     await product.save({validateBeforeSave: false})
 }
 
