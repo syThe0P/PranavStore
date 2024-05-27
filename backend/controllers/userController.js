@@ -21,13 +21,11 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   sendToken(user, 200, res);
-  res.json({
-    message: "User created succesfully",
-  });
 });
 
 //login user
 const loginUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body; 
   if (!email || !password) {
     throw new ApiError(400, "Please enter email and password");
   }
@@ -37,16 +35,13 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid email or password");
   }
 
-  const passwordCheck = user.isPasswordCorrect(password);
+  const passwordCheck = await user.isPasswordCorrect(password);
 
   if (!passwordCheck) {
     throw new ApiError(400, "Invalid credentials");
   }
 
   sendToken(user, 200, res);
-  res.json({
-    message: "User loged in succesfully",
-  });
 });
 
 //logout user
@@ -141,18 +136,23 @@ const updatePassword = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Old Password not matched");
   }
 
-  if (!req.body.newPassword !== req.body.confirmPassword) {
-    throw new ApiError(400, "Password does not matched");
+  if (req.body.newPassword !== req.body.confirmPassword) {
+    throw new ApiError(400, "Passwords do not match");
   }
 
-  user.password = newPassword;
+  // Update user's password
+  user.password = req.body.newPassword;
 
+  // Save the updated user
   await user.save();
-  sendToken(user, 200, res);
+
+  // Send token with updated user
+  // sendToken(user, 200, res);
   res.json({
-    message: "Password changes",
+    message: "Password changed successfully",
   });
 });
+
 
 
 //Update user profile

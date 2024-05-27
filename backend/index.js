@@ -25,6 +25,6 @@ app.use(cookieParser());
 //routes
 app.use('/api/v1', userRoutes);
 app.use('/api/v1',productRoutes);
-app.use('/api/v1')
+app.use('/api/v1', orderRoutes)
 
 app.listen(port, ()=> console.log(`Server running on port ${port}`))

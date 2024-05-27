@@ -1,26 +1,26 @@
 import express from "express";
 import {
-  deleteUser,
-  forgotPassword,
-  getAllUsers,
-  getUserByID,
-  getUserDetails,
+  registerUser,
   loginUser,
   logoutUser,
-  registerUser,
+  forgotPassword,
   resetPassword,
+  getUserDetails,
   updatePassword,
   updateProfile,
+  getAllUsers,
+  getUserByID,
   updateUserByID,
-} from "../controllers/userController";
+  deleteUser
+} from "../controllers/userController.js";
 const router = express.Router();
-import { authenticate, authorizeRoles } from "../middlewares/authMiddleware";
+import { authenticate, authorizeRoles } from "../middlewares/authMiddleware.js";
 
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
 router.route("/password/forgot").post(forgotPassword);
 router.route("/password/reset/:token").put(resetPassword);
-router.route("/logout").post(logoutUser);
+router.route("/logout").post(authenticate,logoutUser);
 
 router.route("/me").get(authenticate, getUserDetails);
 router.route("/password/update").put(authenticate, updatePassword);
