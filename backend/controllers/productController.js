@@ -13,26 +13,21 @@ const createProduct = asyncHandler(async (req, res) => {
 
 //get all products
 const getAllProducts = asyncHandler(async (req, res) => {
-  const resultPerPage = 5;
-  const productCount = await Product.countDocument();
-  const apiFeature = new ApiFeatures(Product.find(), req.query)
-    .search()
-    .filter();
-  const products = await apiFeature.query;
-  let filteredProductCount = products.length;
-  apiFeature.pagination(resultPerPage);
-  products = await apiFeature.query;
-  res.json(
-    new ApiResponse(
-      201,
-      products,
-      productCount,
-      resultPerPage,
-      filteredProductCount,
+  const resultPerPage = 8;
+  const productCount = await Product.countDocuments();
 
-      "All products displayed"
-    )
-  );
+  const apiFeature = new ApiFeatures(Product.find(), req.query)
+  .search()
+  .filter()
+  .pagination(resultPerPage);
+
+  const products = await apiFeature.query;
+
+  res.status(200).json({
+    success: true,
+    products,
+    productCount,
+  })
 });
 
 //update product --admin

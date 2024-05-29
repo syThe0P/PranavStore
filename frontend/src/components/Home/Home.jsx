@@ -1,7 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { CgMouse } from "react-icons/cg";
 import './Home.css'
 import Product from "./Product.jsx"
+import MetaData from '../layout/MetaData.jsx';
+import {getProduct, clearErrors} from "../../actions/productAction.js"
+import {useSelector, useDispatch} from "react-redux"
+
+
 
 const product = {
     name: "Blue Tshirt",
@@ -11,8 +16,21 @@ const product = {
 };
 
 const Home = () => {
+    const dispatch = useDispatch();
+    const { loading, error, products } = useSelector((state) => state.product);
+
+    useEffect(() => {
+        dispatch(getProduct());
+
+        if (error) {
+            // Handle error appropriately
+            console.error(error);
+            dispatch(clearErrors());
+        }
+    }, [dispatch, error]);
   return (
     <>
+    <MetaData title="ECCOMERCE"/>
     <div className="banner">
         <p>Welcome to Ecoomerce</p>
         <h1>FIND AMAZING PRODUCTS BELOW</h1>
