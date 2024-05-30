@@ -1,9 +1,10 @@
 class ApiFeatures {
-    constructor(query, queryStr){
+    constructor(query, queryStr) {
         this.query = query;
         this.queryStr = queryStr;
     }
-    search(){
+
+    search() {
         const keyword = this.queryStr.keyword ? {
             name: {
                 $regex: this.queryStr.keyword,
@@ -11,36 +12,32 @@ class ApiFeatures {
             },
         } : {};
 
-        this.query = this.query(find({...keyword}))
+        this.query = this.query.find({ ...keyword }); // Apply find directly
         return this;
     }
 
-    filter(){
-        const queryCopy = {...this.queryStr}
+    filter() {
+        const queryCopy = { ...this.queryStr };
 
-
-        //Removing some fields for category
-        const removeFields = ["keyword", "page", "limt"];
+        // Removing some fields for category
+        const removeFields = ["keyword", "page", "limit"]; // Corrected "limt" to "limit"
         removeFields.forEach(key => delete queryCopy[key]);
 
-        //filter for price and rating
+        // Filter for price and rating
         let queryStr = JSON.stringify(queryCopy);
-        queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g,key => `$${key}`)
+        queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, key => `$${key}`);
 
-
-
-        this.query = this.query.find(JSON.parse(queryStr));
+        this.query = this.query.find(JSON.parse(queryStr)); // Apply find directly
         return this;
     }
-    pagination(resultPerPage){
+
+    pagination(resultPerPage) {
         const currentPage = Number(this.queryStr.page) || 1;
         const skip = resultPerPage * (currentPage - 1);
 
-        this.query = this.query.limit(resultPerPage).skip(skip)
+        this.query = this.query.limit(resultPerPage).skip(skip);
         return this;
-        
     }
-
 }
 
-export {ApiFeatures}
+export { ApiFeatures };

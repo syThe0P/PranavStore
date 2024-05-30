@@ -47,7 +47,7 @@ const getSingleOrder = asyncHandler(async (req, res) => {
 
 //Get logged in user Orders
 const getOrders = asyncHandler(async(req,res)=>{
-    const orders = await Order.find({user: req.user._id});
+    const orders = await Order.find({user: req.user.id});
     if(!orders) throw new ApiError(401, "You have no orders yet")
 
     res.json(new ApiResponse(
@@ -77,31 +77,33 @@ const getAllOrders = asyncHandler(async(req,res)=>{
 
 
 //Update Order Status
-const updateOrder = asyncHandler(async(req, res)=>{
-    const order  = await Order.find(req.params.id);
-    if(!order) throw new ApiError(401, "You have no orders yet")
-
-    if(order.orderStatus === "Delivered"){
-        throw new ApiError(400, "You have already delivered this order")
+const updateOrder = asyncHandler(async(req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+        throw new ApiError(404, "Order not found");
     }
 
-    order.orderItems.forEach(async(o)=> {
-        await updateStock(o.Product, o.quantity);
-    })
+    if (order.orderStatus === "Delivered") {
+        throw new ApiError(400, "This order has already been delivered");
+    }
 
-    order.orderStatus === req.body.status;
-    if(req.body.status === "Delivered"){
+    order.orderItems.forEach(async (o) => {
+        await updateStock(o.product, o.quantity); // Assuming 'Product' is the correct property name
+    });
+
+    order.orderStatus = req.body.status;
+    if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
     }
 
-    await order.save({validateBeforeSave: false});
+    await order.save({ validateBeforeSave: false });
 
     res.json(new ApiResponse(
         200,
         "Order status updated"
-    ))
+    ));
+});
 
-})
 
 //Function to update stock
 async function updateStock(id, quantity){
@@ -113,17 +115,17 @@ async function updateStock(id, quantity){
 
 
 //Delete Order
-const deleteOrder = asyncHandler(async(req,res)=>{
-    const order = await Order.find(req.params.id);
-    if(!order) throw new ApiError(401, "You have no orders yet")
-
-    await order.remove();
+const deleteOrder = asyncHandler(async(req, res) => {
+    const order = await Order.findByIdAndDelete(req.params.id);
+    if (!order) {
+        throw new ApiError(404, "Order not found");
+    }
 
     res.json(new ApiResponse(
         200,
         "Order deleted"
-    ))
-})
+    ));
+});
 
 
 export { newOrder, getSingleOrder,getOrders,getAllOrders, updateOrder,deleteOrder};
