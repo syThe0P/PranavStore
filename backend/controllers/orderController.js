@@ -45,7 +45,7 @@ const getSingleOrder = asyncHandler(async (req, res) => {
 });
 
 
-//Get logged in user Orders
+//Get logged in user Orders   //Getting error here
 const getOrders = asyncHandler(async(req,res)=>{
     const orders = await Order.find({user: req.user.id});
     if(!orders) throw new ApiError(401, "You have no orders yet")
