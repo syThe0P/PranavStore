@@ -30,3 +30,4 @@ class ApiError extends Error {
   Super Keyword: The super() function is called inside the constructor to invoke the constructor of the parent class (Error). This ensures that the error message is properly initialized using the provided message.
   Custom Properties: Additional custom properties specific to ApiError instances are set inside the constructor. These properties include statusCode, data, message, success, and errors, which provide information about the error context, success status, and error details.
   */
+

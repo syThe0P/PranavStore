@@ -3,7 +3,7 @@ import { CgMouse } from "react-icons/cg";
 import "./Home.css";
 import Product from "./Product.jsx";
 import MetaData from "../layout/MetaData.jsx";
-import { getProduct, clearErrors } from "../../actions/productAction.js";
+import { getProduct} from "../../actions/productAction.js";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "../layout/Loader/Loader.jsx";
 import {useAlert} from "react-alert"
@@ -44,7 +44,7 @@ const Home = () => {
           <h2 className="homeHeading">Featured Products</h2>
           <div className="container" id="container">
             {products?.map((product) => (
-              <Product product={product} />
+              <Product key={product._id} product={product} />
             ))}
           </div>
         </>
