@@ -2,11 +2,12 @@ import React, { useEffect } from "react";
 import "./ProductDetails.css";
 import Carousel from "react-material-ui-carousel";
 import { useSelector, useDispatch } from "react-redux";
-import { getProductDetails } from "../../actions/productAction";
+import { clearErrors, getProductDetails } from "../../actions/productAction";
 import Loader from "../layout/Loader/Loader";
 import { useAlert } from "react-alert";
 import { useParams } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
+import ReviewCard from "./ReviewCard.jsx"; // Ensure you have the ReviewCard component imported
 
 const ProductDetails = () => {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const ProductDetails = () => {
   useEffect(() => {
     if (error) {
       alert.error(error);
+      dispatch(clearErrors())
     }
     dispatch(getProductDetails(id));
   }, [dispatch, id, error, alert]);
@@ -86,6 +88,17 @@ const ProductDetails = () => {
             <button className="submitReview">Submit Review</button>
           </div>
         </div>
+        
+      )}
+      <h3 className="reviewsHeading">REVIEWS</h3>
+      {product.reviews && product.reviews[0] ? (
+        <div className="review">
+          {product.reviews && product.reviews.map((review, i) => (
+            <ReviewCard key={i} review={review} />
+          ))}
+        </div>
+      ) : (
+        <p>No Reviews Yet</p>
       )}
     </>
   );

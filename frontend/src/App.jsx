@@ -6,7 +6,8 @@ import Home from "./components/Home/Home.jsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Import Routes and Route
 import WebFont from "webfontloader";
 import ProductDetails from "./components/Product/ProductDetails.jsx";
-
+import Products from "./components/Product/Products.jsx"
+import Search from "./components/Product/Search.jsx"
 function App() {
   useEffect(() => {
     WebFont.load({
@@ -22,6 +23,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/search" element={<Search />} />
       </Routes>
       <Footer />
     </Router>
