@@ -43,6 +43,7 @@ const ProductDetails = () => {
       {loading ? (
         <Loader />
       ) : (
+        
         <div className="ProductDetails">
           <div>
             <Carousel>

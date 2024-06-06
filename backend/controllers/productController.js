@@ -17,9 +17,11 @@ const getAllProducts = asyncHandler(async (req, res) => {
   const productsCount = await Product.countDocuments();
 
   const apiFeature = new ApiFeatures(Product.find(), req.query)
-  .search()
-  .filter()
-  .pagination(resultPerPage);
+    .search()
+    .filter()
+    .pagination(resultPerPage)
+
+
 
   const products = await apiFeature.query;
 
@@ -27,7 +29,9 @@ const getAllProducts = asyncHandler(async (req, res) => {
     success: true,
     products,
     productsCount,
-  })
+    resultPerPage,
+  });
+
 });
 
 //update product --admin
