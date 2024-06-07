@@ -48,7 +48,7 @@ const options = {
   profileIconMargin: "1vmax",
   searchIconUrl: "/search",
   cartIconUrl: "/cart",
-  profileIconUrl: "/account",
+  profileIconUrl: "/login",
   searchIconSize: "2vmax",
   cartIconSize: "2vmax",
   profileIconSize: "2.5vmax",
